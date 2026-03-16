@@ -2,107 +2,93 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <title>PHD :: Sistema Interno</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PHD :: Terminal</title>
   <style>
     body {
       margin: 0;
       background: #05070d;
       color: #cfe0ff;
       font-family: "Segoe UI", Arial, sans-serif;
-      height: 100vh;
       overflow: hidden;
-      cursor: default;
     }
-
     .screen {
+      width: 100vw;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      text-align: center;
+      justify-content: center;
     }
-
-    .boot {
-      font-size: 20px;
-      opacity: 0.9;
-      margin-bottom: 20px;
-    }
-
-    .loader {
-      width: 420px;
-      height: 10px;
-      background: #0c1530;
-      border: 1px solid #1f3f8f;
-      overflow: hidden;
-    }
-
+    .boot-text { font-size: 22px; margin-bottom: 20px; }
     .bar {
+      width: 320px;
+      height: 8px;
+      border: 1px solid #1f3f8f;
+      margin-top: 10px;
+    }
+    .fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, #1f6fff, #4da3ff);
-      transition: width 0.1s linear;
+      background: #1f3f8f;
+      transition: width 0.3s;
     }
-
-    .percent {
-      margin-top: 10px;
-      font-size: 14px;
-      opacity: 0.7;
-    }
-
-    .login {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .login h2 {
-      font-weight: 400;
-      letter-spacing: 1px;
-    }
-
-    .password {
-      width: 360px;
-      padding: 14px;
-      font-size: 18px;
-      background: #0c1530;
+    .hidden { display: none; }
+    input {
+      background: #0b1328;
       border: 1px solid #1f3f8f;
       color: #cfe0ff;
-      outline: none;
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+      text-align: center;
     }
-
     .hints {
       margin-top: 20px;
       font-size: 14px;
       opacity: 0.85;
-      text-align: center;
-      display: none;
       white-space: pre-line;
+      text-align: center;
     }
-
-    .error {
-      color: #ff6b6b;
-      margin-top: 10px;
-      display: none;
+    header {
+      padding: 20px;
+      border-bottom: 1px solid #1f3f8f;
+      text-align: center;
     }
-
+    main {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .project {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 60px;
+      align-items: center;
+    }
+    .project img {
+      max-width: 420px;
+      border: 1px solid #1f3f8f;
+    }
+    footer {
+      text-align: center;
+      font-size: 12px;
+      opacity: 0.6;
+      padding: 20px;
+    }
   </style>
 </head>
 <body>
 
-<div class="screen" id="bootScreen">
-  <div class="boot">Inicializando sistema PHD...</div>
-  <div class="loader"><div class="bar" id="bar"></div></div>
-  <div class="percent" id="percent">0%</div>
+<div id="boot" class="screen">
+  <div class="boot-text">Inicializando sistema PHD...</div>
+  <div class="bar"><div id="fill" class="fill"></div></div>
 </div>
 
-<div class="screen login" id="loginScreen">
-  <h2>insira a senha</h2>
-  <input class="password" id="password" type="password" autocomplete="off" />
-  <div class="error" id="error">acesso negado</div>
-  <div class="hints" id="hints">
+<div id="login" class="screen hidden">
+  <div class="boot-text">Insira a senha</div>
+  <input id="password" type="password" placeholder="Senha" />
+  <div id="hints" class="hints hidden">
 klixl - espelho
 
 .-/.-../--/.- - nós temos
@@ -113,46 +99,62 @@ klixl - espelho
   </div>
 </div>
 
+<div id="system" class="hidden">
+  <header>
+    <h1>PHD :: Projeto Horizonte Delta</h1>
+    <p>acesso interno autorizado</p>
+  </header>
+  <main>
+    <div class="project">
+      <img src="delta_v1.png" alt="Projeto Delta V1" />
+      <p><strong>Projeto Delta V1:</strong><br>vamos tentar representar o vácuo e gravidade, testar sempre em animais e humanos <strong>SEMPRE</strong> com traje espacial.</p>
+    </div>
+    <div class="project">
+      <img src="delta_v2.png" alt="Projeto Delta V2" />
+      <p><strong>Projeto Delta V2:</strong><br>vamos representar a gravidade espacial, testar com objetos e humanos.</p>
+    </div>
+  </main>
+  <footer>PHD – documentos internos // não distribuir</footer>
+</div>
+
 <script>
-  const bar = document.getElementById('bar');
-  const percent = document.getElementById('percent');
-  const boot = document.getElementById('bootScreen');
-  const login = document.getElementById('loginScreen');
-  const hints = document.getElementById('hints');
-  const input = document.getElementById('password');
-  const error = document.getElementById('error');
+let progress = 0;
+const fill = document.getElementById('fill');
+const boot = document.getElementById('boot');
+const login = document.getElementById('login');
+const system = document.getElementById('system');
 
-  let progress = 0;
-  const interval = setInterval(() => {
-    if (progress < 99) {
-      progress++;
-      bar.style.width = progress + '%';
-      percent.textContent = progress + '%';
+const interval = setInterval(() => {
+  if (progress < 99) {
+    progress++;
+    fill.style.width = progress + '%';
+  } else {
+    clearInterval(interval);
+    setTimeout(() => {
+      boot.classList.add('hidden');
+      login.classList.remove('hidden');
+    }, 5000);
+  }
+}, 40);
+
+login.addEventListener('click', (e) => {
+  if (e.target.tagName !== 'INPUT') {
+    document.getElementById('hints').classList.remove('hidden');
+  }
+});
+
+const input = document.getElementById('password');
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    if (input.value === 'pass') {
+      login.classList.add('hidden');
+      system.classList.remove('hidden');
     } else {
-      clearInterval(interval);
-      setTimeout(() => {
-        boot.style.display = 'none';
-        login.style.display = 'flex';
-      }, 5000);
+      input.value = '';
+      input.placeholder = 'Senha incorreta';
     }
-  }, 40);
-
-  document.addEventListener('click', (e) => {
-    if (e.target !== input) {
-      hints.style.display = 'block';
-    }
-  });
-
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      if (input.value.toLowerCase() === 'pass') {
-        document.body.innerHTML = '<div class="screen"><h1>ACESSO CONCEDIDO</h1><p>PHD // Horizonte Delta</p></div>';
-      } else {
-        error.style.display = 'block';
-        input.value = '';
-      }
-    }
-  });
+  }
+});
 </script>
 
 </body>
