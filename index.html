@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PHD :: Terminal</title>
+  <style>
+    body {
+      margin: 0;
+      background: #05070d;
+      color: #cfe0ff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .boot {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .loader {
+      width: 420px;
+      height: 10px;
+      background: #0c1530;
+      border: 1px solid #1f3f8f;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #1f6fff, #4da3ff);
+      transition: width 0.1s linear;
+    }
+
+    .percent {
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    .login {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .login h2 {
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+
+    .password {
+      width: 360px;
+      padding: 14px;
+      font-size: 18px;
+      background: #0c1530;
+      border: 1px solid #1f3f8f;
+      color: #cfe0ff;
+      outline: none;
+    }
+
+    .hints {
+      margin-top: 20px;
+      font-size: 14px;
+      opacity: 0.85;
+      text-align: center;
+      display: none;
+      white-space: pre-line;
+    }
+
+    .error {
+      color: #ff6b6b;
+      margin-top: 10px;
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="screen" id="bootScreen">
+  <div class="boot">Inicializando sistema PHD...</div>
+  <div class="loader"><div class="bar" id="bar"></div></div>
+  <div class="percent" id="percent">0%</div>
+</div>
+
+<div class="screen login" id="loginScreen">
+  <h2>insira a senha</h2>
+  <input class="password" id="password" type="password" autocomplete="off" />
+  <div class="error" id="error">acesso negado</div>
+  <div class="hints" id="hints">
+klixl - espelho
+
+.-/.-../--/.- - nós temos
+
+└•  ┌   ⊓•  ⊔•  ⊔   ┌   ⊓   ✕•  ✕ - alfabeto
+
+ςετιμο - ano
+  </div>
+</div>
+
+<script>
+  const bar = document.getElementById('bar');
+  const percent = document.getElementById('percent');
+  const boot = document.getElementById('bootScreen');
+  const login = document.getElementById('loginScreen');
+  const hints = document.getElementById('hints');
+  const input = document.getElementById('password');
+  const error = document.getElementById('error');
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    if (progress < 99) {
+      progress++;
+      bar.style.width = progress + '%';
+      percent.textContent = progress + '%';
+    } else {
+      clearInterval(interval);
+      setTimeout(() => {
+        boot.style.display = 'none';
+        login.style.display = 'flex';
+      }, 5000);
+    }
+  }, 40);
+
+  document.addEventListener('click', (e) => {
+    if (e.target !== input) {
+      hints.style.display = 'block';
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      if (input.value.toLowerCase() === 'pass') {
+        document.body.innerHTML = '<div class="screen"><h1>ACESSO CONCEDIDO</h1><p>PHD // Horizonte Delta</p></div>';
+      } else {
+        error.style.display = 'block';
+        input.value = '';
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
